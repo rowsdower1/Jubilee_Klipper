@@ -1,0 +1,34 @@
+[gcode_macro COUNTDOWN_HEAT]
+gcode:
+    # Split the input string into a list of values
+    {% set countdown_values = value.split(",") %}
+    
+    # Check if there are at least 4 values and they are numeric
+    {% if countdown_values|length >= 4 and countdown_values[0].isnumeric() and countdown_values[1].isnumeric() and countdown_values[2].isnumeric() %}
+    
+        {% set tool0_countdown = countdown_values[0]|int %}
+        {% set tool1_countdown = countdown_values[1]|int %}
+        {% set tool2_countdown = countdown_values[2]|int %}
+        
+        # Tool 0 (T0) temperature control
+        {% if tool0_countdown < 5 %}
+            M104 T0 S{{ printer["gcode_macro SET_VARS"].standby0 }}
+        {% elif tool0_countdown < 2 %}
+            M104 T0 S{{ printer["gcode_macro SET_VARS"].temp0|int - 5 }}
+        {% endif %}
+        
+        # Tool 1 (T1) temperature control
+        {% if tool1_countdown < 5 %}
+            M104 T1 S{{ printer["gcode_macro SET_VARS"].standby1 }}
+        {% elif tool1_countdown < 2 %}
+            M104 T1 S{{ printer["gcode_macro SET_VARS"].temp1|int - 5 }}
+        {% endif %}
+        
+        # Tool 2 (T2) temperature control
+        {% if tool2_countdown < 5 %}
+            M104 T2 S{{ printer["gcode_macro SET_VARS"].standby2 }}
+        {% elif tool2_countdown < 2 %}
+            M104 T2 S{{ printer["gcode_macro SET_VARS"].temp2|int - 5 }}
+        {% endif %}
+    
+    {% endif %}
